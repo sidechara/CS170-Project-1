@@ -7,7 +7,7 @@ Puzzle::Puzzle(int* array) {
     for (int i = 0; i < 9; i++) {
         initial.state[i] = array[i];
         if (array[i] == 0) {
-            initial.blank = i;
+            initial.blank = i; //Initialize index of blank tile
         }
     }
     initial.depth = 0;
@@ -17,7 +17,7 @@ Puzzle::Puzzle(int* array) {
 
 bool Puzzle::goal(State s) {
     for (int i = 0; i < 8; i++) {
-        if (s.state[i]-1 != i) {
+        if (s.state[i]-1 != i) { //Checks if tile found in a spot is equal to the index
             return false;
         }
     }
@@ -27,12 +27,12 @@ bool Puzzle::goal(State s) {
 void Puzzle::expand(State s, int algorithm) {
     int row = s.blank/3;
     int col = s.blank%3;
-    if (row > 0) {
+    if (row > 0) { //If blank tile can move up
         State up;
         for (int i = 0; i < 9; i++) {
             if (i/3 == row-1 && i%3 == col) {
-                up.state[i] = 0;
-                up.state[i+3] = s.state[i];
+                up.state[i] = 0; //Move blank tile to new place
+                up.state[i+3] = s.state[i]; //Swap the physical tile
                 up.blank = i;
             } else if (s.state[i] != 0) {
                 up.state[i] = s.state[i];
@@ -49,12 +49,12 @@ void Puzzle::expand(State s, int algorithm) {
         pq.push(up);
 
     }
-    if (col > 0) {
+    if (col > 0) { //If blank tile can move left
         State left;
         for (int i = 0; i < 9; i++) {
             if (i/3 == row && i%3 == col-1) {
-                left.state[i] = 0;
-                left.state[i+1] = s.state[i];
+                left.state[i] = 0; //Move blank tile to new place
+                left.state[i+1] = s.state[i]; //Swap the physical tile
                 left.blank = i;
             } else if (s.state[i] != 0) {
                 left.state[i] = s.state[i];
@@ -71,12 +71,12 @@ void Puzzle::expand(State s, int algorithm) {
         pq.push(left);
 
     }
-    if (col < 2) {
+    if (col < 2) { //If blank tile can move right
         State right;
         for (int i = 0; i < 9; i++) {
             if (i/3 == row && i%3 == col+1) {
-                right.state[i] = 0;
-                right.state[i-1] = s.state[i];
+                right.state[i] = 0; //Move blank tile to new place
+                right.state[i-1] = s.state[i]; //Swap the physical tile
                 right.blank = i;
             } else if (s.state[i] != 0) {
                 right.state[i] = s.state[i];
@@ -93,12 +93,12 @@ void Puzzle::expand(State s, int algorithm) {
         pq.push(right);
 
     }
-    if (row < 2) {
+    if (row < 2) { //If blank tile can move down
         State down;
         for (int i = 0; i < 9; i++) {
             if (i/3 == row+1 && i%3 == col) {
-                down.state[i] = 0;
-                down.state[i-3] = s.state[i];
+                down.state[i] = 0; //Move blank tile to new place
+                down.state[i-3] = s.state[i]; //Swap the physical tile
                 down.blank = i;
             } else if (s.state[i] != 0) {
                 down.state[i] = s.state[i];
@@ -117,7 +117,7 @@ void Puzzle::expand(State s, int algorithm) {
     }
 }
 
-int Puzzle::misplaced_tile(State s) {
+int Puzzle::misplaced_tile(State s) { //Heuristic based on number of tiles (not including blank) that are misplaced
     int misplaced = 0;
     for (int i = 0; i < 9; i++) {
         if (s.state[i] != 0) {
@@ -127,12 +127,12 @@ int Puzzle::misplaced_tile(State s) {
     return misplaced;
 }
 
-int Puzzle::manhattan_distance(State s) {
+int Puzzle::manhattan_distance(State s) { //Heuristic based on sum of displacement in terms of rows and cols across all tiles (not including blank)
     int distance = 0;
     for (int i = 0; i < 9; i++) {
         if (s.state[i] != 0) {
-            distance+=(abs((s.state[i]-1)/3 - i/3));
-            distance+=(abs((s.state[i]-1)%3 - i%3));
+            distance+=(abs((s.state[i]-1)/3 - i/3)); //Add distance from proper row
+            distance+=(abs((s.state[i]-1)%3 - i%3)); //Add distance from proper column
         }
     }
     return distance;
@@ -142,43 +142,33 @@ int Puzzle::manhattan_distance(State s) {
 
 
 State Puzzle::solve(int algorithm) {
-    //evaluate initial state and add to queue
+    //Evaluate initial state heuristic, add to queue
     if (algorithm == 1) {
         initial.heuristic = misplaced_tile(initial);
     } else if (algorithm == 2) {
         initial.heuristic = manhattan_distance(initial);
     } else {
-        initial.heuristic = 0;
+        initial.heuristic = 0; //Uniform Cost Search, h(n) = 0
     }
     pq.push(initial);
 
-    while(true) {
-        if (pq.empty()) return State{0, 0, 0, 0, 0, 0, 0, 0, 0};
-        if (pq.size() > max_queue) {
+    while(true) { //Repeat while there are still nodes in the queue
+        if (pq.empty()) return State{0, 0, 0, 0, 0, 0, 0, 0, 0}; //No solution
+        if (pq.size() > max_queue) { //Update max nodes in queue
             max_queue = pq.size();
         }
-        State current = pq.top();
+        State current = pq.top(); //Get node with lowest estimated distance
         pq.pop();
         /*cout << "[ " << current.state[0] << " " << current.state[1] << " " << current.state[2] << " ]" << endl;
         cout << "[ " << current.state[3] << " " << current.state[4] << " " << current.state[5] << " ]" << endl;
         cout << "[ " << current.state[6] << " " << current.state[7] << " " << current.state[8] << " ]" << endl << endl;*/
-        if (goal(current)) {
+        if (goal(current)) { //Test if current state is goal state
             return current;
         }
-        expand(current, algorithm);
-        nodes_expanded++;
+        expand(current, algorithm); //Get current node's children, evaluate them and insert into queue
+        nodes_expanded++; //Update number of nodes expanded
 
     }
-
-
-    //loop:
-    //if queue empty
-    //else remove min state
-    //test goal
-    //get current node's children,
-    //evaluate them using type of search,
-    //insert them into the queueing function
-
 
 
 }

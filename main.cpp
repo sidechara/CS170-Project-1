@@ -5,6 +5,7 @@
 
 using namespace std;
 
+//Default 8-puzzles
 int trivial[] = {1, 2, 3, 4, 5, 6, 7, 8, 0};
 int veryEasy[] = {1, 2, 3, 4, 5, 6, 7, 0, 8};
 int easy[] = {1, 2, 0, 4, 5, 3, 7, 8, 6};
@@ -44,6 +45,7 @@ Puzzle init_default_puzzle() {
 
 }
 
+//Print final result
 void print(Puzzle puzzle, State end) {
     State init = puzzle.getInitial();
 

@@ -2,32 +2,32 @@
 
 using namespace std;
 
+//Stores potential state of a puzzle at any point during solving
 struct State {
-    int state[9];
-    int blank;
-    int depth;
-    int heuristic;
+    int state[9]; //encodes which tile is in each of the 9 indexed slots
+    int blank; //index of blank tile
+    int depth; //depth of state relative to initial
+    int heuristic; //heuristic value of state
 };
 
+//Allows us to compare two States
 class Compare {
 
 public:
-    bool operator() (State a, State b) {
+    bool operator() (State a, State b) { //Returns whether two States are in correct order (needs reordering)
         if (a.depth + a.heuristic > b.depth + b.heuristic) {
             return true;
         }
         return false;
     }
-}; //compare states (arrays) so the min heap can work
+};
 
 
 class Puzzle {
     State initial;
-    //actual current state of puzzle
-    priority_queue<State, vector<State>, Compare> pq;
-    int solution_depth = 0;
-    long nodes_expanded = 0;
-    long max_queue = 0;
+    priority_queue<State, vector<State>, Compare> pq; //stores States in order of estimated cost to goal
+    long nodes_expanded = 0; //total nodes expanded during solving
+    long max_queue = 0; //max number of nodes in the queue during solving
 
 
 public:
