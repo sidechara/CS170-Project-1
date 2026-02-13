@@ -159,10 +159,6 @@ State Puzzle::solve(int algorithm) {
         }
         State current = pq.top(); //Get node with lowest estimated distance
         pq.pop();
-        cout << "The best state to expand, with g(n) = " << current.depth << " and h(n) = " << current.heuristic << " is:" << endl;
-        cout << "[ " << current.state[0] << " " << current.state[1] << " " << current.state[2] << " ]" << endl;
-        cout << "[ " << current.state[3] << " " << current.state[4] << " " << current.state[5] << " ]" << endl;
-        cout << "[ " << current.state[6] << " " << current.state[7] << " " << current.state[8] << " ]" << endl << endl;
         if (goal(current)) { //Test if current state is goal state
             return current;
         }

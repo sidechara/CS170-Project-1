@@ -47,6 +47,11 @@ Puzzle init_default_puzzle() {
 
 //Print final result
 void print(Puzzle puzzle, State end) {
+    if (end.state[0] == 0 && end.state[1] == 0) {
+        cout << "Could not find solution; invalid initial state.\n";
+        return;
+    }
+
     State init = puzzle.getInitial();
 
     cout << "[ " << init.state[0] << " " << init.state[1] << " " << init.state[2] << " ]" << endl;
